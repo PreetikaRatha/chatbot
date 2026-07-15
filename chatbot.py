@@ -1,12 +1,7 @@
+from google import genai
 import streamlit as st
-import google.generativeai as genai
 
-genai.configure(api_key=st.secrets["API_KEY"])
-
-model = genai.GenerativeModel("gemini-2.5-flash")
-
-if "chat" not in st.session_state:
-    st.session_state.chat = model.start_chat(history=[])
+client = genai.Client(api_key=st.secrets["API_KEY"])
 
 st.title("🤖 Gemini Chatbot")
 
@@ -15,6 +10,9 @@ prompt = st.chat_input("Type your message...")
 if prompt:
     st.chat_message("user").write(prompt)
 
-    response = st.session_state.chat.send_message(prompt)
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt,
+    )
 
     st.chat_message("assistant").write(response.text)
